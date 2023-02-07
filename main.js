@@ -6,8 +6,9 @@ import { $http } from '@escook/request-miniprogram'
 
 uni.$http = $http
 
+
 // 请求的根路径
-$http.baseUrl = 'https://www.uinav.com'
+$http.baseUrl = 'https://api-hmugo-web.itheima.net'
 
 // 请求拦截器
 $http.beforeRequest = function(options) {
@@ -21,7 +22,7 @@ $http.afterRequest = function() {
   uni.hideLoading()
 }
 
-// 封装弹框的方法
+// 封装展示消息提示的方法
 uni.$showMsg = function(title = '数据请求失败！', duration = 1500) {
   uni.showToast({
     title,

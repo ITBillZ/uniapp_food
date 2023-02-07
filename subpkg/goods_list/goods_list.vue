@@ -1,19 +1,93 @@
 <template>
-	<view>
-		Goods_list
-	</view>
+  <view>
+    <view class="goods-list">
+      <!-- block只是为了让结构清晰 -->
+      <view v-for="(goods, i) in goodsList" :key="i" @click="gotoDetail(goods)"> 
+        <my-goods :goods="goods"></my-goods>
+      </view>
+    </view>
+  </view>
 </template>
 
 <script>
-	export default {
-		data() {
-			return {
-				
-			};
-		}
-	}
+  export default {
+    data() {
+      return {
+        // 请求参数对象
+        queryObj: {
+          query: '',
+          cid: '',
+          pagenum: 1,
+          pagesize: 10
+        },
+
+        goodsList: [],
+        total: 0 ,// 方便分页
+        
+        // 节流阀，是否正在请求数据，防止发起额外的请求
+        isloading: false
+      }
+    },
+    onLoad(options) {
+      this.queryObj.query = options.query || ' '
+      this.queryObj.cid = options.cid || ''
+
+      this.getGoodsList()
+    },
+
+    methods: {
+      // 获取商品列表数据的方法
+      async getGoodsList(cb) {
+        // ** 打开节流阀
+        this.isloading = true
+        
+        const {
+          data: res
+        } = await uni.$http.get('/api/public/v1/goods/search', this.queryObj)
+        
+        // ** 关闭节流阀
+        this.isloading = false
+        
+        // callback，| 如果cb存在就调用
+        cb && cb()
+        
+        if (res.meta.status !== 200) return uni.$showMsg()
+        
+        // https://api-hmugo-web.itheima.net/api/public/v1/goods/search
+        this.goodsList = [...this.goodsList, ...res.message.goods]
+        this.total = res.message.total
+      },
+      gotoDetail(goods) {
+        uni.navigateTo({
+          url: '/subpkg/goods_detail/goods_detail?goods_id=' + goods.goods_id
+        })
+    }
+    },
+    onReachBottom() {
+      // 判断是否还有商品
+      if (this.queryObj.pagenum * this.queryObj.pagesize >= this.total) 
+        return uni.$showMsg('数据加载完毕！')
+      
+      if (this.isloading) return
+      // 页码值自增
+      this.queryObj.pagenum++
+      this.getGoodsList()
+    },
+    onPullDownRefresh() {
+      // 重置关键数据
+      this.queryObj.pagenum = 1
+      this.total = 0
+      this.isloading = false
+      this.goodsList = []
+      
+      // 重新发起数据请求
+      // 用于刷新完毕后，回调
+      this.getGoodsList(() => uni.stopPullDownRefresh())
+    }
+  }
 </script>
 
 <style lang="scss">
+  
 
 </style>

@@ -16,13 +16,27 @@
     "root": "subpkg",
     "pages": [{
       "path": "goods_detail/goods_detail",
-      "style": {}
+      "style": {
+        "navigationBarTitleText": "",
+        "enablePullDownRefresh": false
+      }
+
     }, {
       "path": "goods_list/goods_list",
-      "style": {}
+      "style": {
+        "navigationBarTitleText": "",
+        "onReachBottomDistance": 150,  // 触底
+        "enablePullDownRefresh": true, // 开启下拉刷新
+        "backgroundColor": "#f8f8f8"
+      }
+
     }, {
       "path": "search/search",
-      "style": {}
+      "style": {
+        "navigationBarTitleText": "",
+        "enablePullDownRefresh": false
+      }
+
     }]
   }],
   "globalStyle": {
